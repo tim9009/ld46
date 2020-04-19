@@ -17,24 +17,30 @@ const person = new Entity({
 		width: 10,
 		height: 20
 	},
-	mass: 1,
+	mass: 5,
 	restitution: 0,
 	onCreated() {
 	},
 	init() {
 		this.active = false
 		this.color = 'blue'
-		this.vlavla = 0.1
+		this.speed = 0.2
+		this.maxSpeed = 4
 		this.boarded = true
 		this.inContactWithExit = false
 		this.collisionTarget = null
 		this.lastInteraction = Date.now()
 		this.interactionCooldown = 200
+		this.onGround = true
 	},
 	onCollision(target) {
 		if(target.type == 'exit') {
 			this.collisionTarget = target
 			this.inContactWithExit = true
+		}
+
+		if(target.type == 'terrain') {
+			this.onGround = true
 		}
 	},
 	update() {
@@ -65,22 +71,29 @@ const person = new Entity({
 
 		// A
 		if(Vroom.isKeyPressed(65)) {
-			this.vel.x -= this.vlavla
+			this.vel.x -= this.speed
 		}
 
 		// D
 		if(Vroom.isKeyPressed(68)) {
-			this.vel.x += this.vlavla
+			this.vel.x += this.speed
 		}
 
-		// W
-		if(Vroom.isKeyPressed(87)) {
-			this.vel.y -= this.vlavla
+		// SPACE
+		if(Vroom.isKeyPressed(32)) {
+			if(this.onGround) {
+				this.vel.y = -15
+				this.onGround = false
+			}
 		}
 
-		// S
-		if(Vroom.isKeyPressed(83)) {
-			this.vel.y += this.vlavla
+		// Limit speed
+		if(this.vel.x > this.maxSpeed) {
+			this.vel.x = this.maxSpeed
+		}
+
+		if(this.vel.x < -this.maxSpeed) {
+			this.vel.x = -this.maxSpeed
 		}
 	},
 	render(ctx) {

@@ -31,8 +31,8 @@ const ground = new Entity({
 ground.activate = function() {
 	this.active = true
 	Vroom.state.physics.gravity.y = 9.81
-	Vroom.state.physics.friction.x = 2
-	Vroom.state.physics.friction.y = 2
+	Vroom.state.physics.friction.x = 5
+	Vroom.state.physics.friction.y = 5
 
 	// Register entities
 	Vroom.registerEntity(person)
@@ -123,7 +123,8 @@ ground.setScene = function(options) {
 		dim: {
 			width: elementThickness,
 			height: wallHeight
-		}
+		},
+		type: 'wall'
 	}))
 
 	// Right wall
@@ -135,7 +136,8 @@ ground.setScene = function(options) {
 		dim: {
 			width: elementThickness,
 			height: wallHeight
-		}
+		},
+		type: 'wall'
 	}))
 }
 

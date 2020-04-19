@@ -20,7 +20,7 @@ const shuttle = new Entity({
 	},
 	init() {
 		this.color = 'white'
-		this.vlavla = 0.1
+		this.speed = 0.1
 		this.launched = false
 		this.collisionTarget = null
 		this.lastInteraction = Date.now()
@@ -70,22 +70,22 @@ const shuttle = new Entity({
 		}
 		// A
 		if(Vroom.isKeyPressed(65)) {
-			this.vel.x -= this.vlavla
+			this.vel.x -= this.speed
 		}
 
 		// D
 		if(Vroom.isKeyPressed(68)) {
-			this.vel.x += this.vlavla
+			this.vel.x += this.speed
 		}
 
 		// W
 		if(Vroom.isKeyPressed(87)) {
-			this.vel.y -= this.vlavla
+			this.vel.y -= this.speed
 		}
 
 		// S
 		if(Vroom.isKeyPressed(83)) {
-			this.vel.y += this.vlavla
+			this.vel.y += this.speed
 		}
 	},
 	render(ctx) {

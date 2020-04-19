@@ -21,6 +21,7 @@ class Terrain extends Entity {
 		})
 
 		this.color = 'white'
+		this.type = options.type || 'terrain'
 	}
 
 	render(ctx) {

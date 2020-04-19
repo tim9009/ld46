@@ -51,8 +51,8 @@ const space = new Entity({
 space.activate = function() {
 	this.active = true
 	Vroom.state.physics.gravity.y = 0
-	Vroom.state.physics.friction.x = 1
-	Vroom.state.physics.friction.y = 1
+	Vroom.state.physics.friction.x = 0.5
+	Vroom.state.physics.friction.y = 0.5
 
 	Vroom.registerEntity(mothership)
 	Vroom.registerEntity(shuttle)
