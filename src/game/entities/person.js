@@ -22,6 +22,7 @@ const person = new Entity({
 	onCreated() {
 	},
 	init() {
+		console.log('Person running init')
 		this.active = false
 		this.color = 'blue'
 		this.speed = 0.2
@@ -152,6 +153,11 @@ const person = new Entity({
 	}
 })
 
+// On game restart
+person.restart = function() {
+	this.init()
+}
+
 // Check if interaction cooldown is active
 person.interactionCooldownActive = function() {
 	return Date.now() - this.lastInteraction < this.interactionCooldown
@@ -159,6 +165,8 @@ person.interactionCooldownActive = function() {
 
 // Activate person with correct sate
 person.activate = function() {
+	this.pos.x = 100
+	this.pos.y = -20
 	this.boarded = true
 	this.lastInteraction = Date.now()
 }
@@ -179,8 +187,6 @@ person.leave = function() {
 	this.boarded = false
 	this.vel.x = 2
 	this.vel.y = 0
-	// this.pos.x = this.collisionTarget.pos.x + this.collisionTarget.halfDim.width - this.halfDim.width
-	// this.pos.y = this.collisionTarget.pos.y + this.collisionTarget.halfDim.height - this.halfDim.height
 	this.lastInteraction = Date.now()
 }
 

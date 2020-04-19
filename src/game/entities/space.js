@@ -4,7 +4,9 @@ import { mothership } from './mothership.js'
 import { shuttle } from './shuttle.js'
 import { Encounter } from './Encounter.js'
 
-const state = require('../state.js')
+import store from '@/store'
+
+// const state = require('../state.js')
 
 const space = new Entity({
 	layer: 1,
@@ -12,6 +14,7 @@ const space = new Entity({
 		enabled: false	
 	},
 	init() {
+		console.log('Space running init')
 		this.active = false
 		this.starCount = 50000
 		this.stars = []
@@ -27,10 +30,8 @@ const space = new Entity({
 			return
 		}
 
-		ctx.fillStyle = 'white' //'#A5A5A5'
+		ctx.fillStyle = 'white'
 		
-		// let baseRelativePos = Vroom.util.getCameraRelativePos({x: 0, y: 0})
-		// let drawCount = 0
 		for (let star in this.stars) {
 			// Handle star is outside viewport
 			if (!Vroom.util.isPosInCameraView(this.stars[star].pos)) {
@@ -42,11 +43,18 @@ const space = new Entity({
 			ctx.beginPath()
 			ctx.arc(relativePos.x, relativePos.y, this.stars[star].r, 0, 2 * Math.PI)
 			ctx.fill()
-			// drawCount++
 		}
-		// console.log(drawCount)
+
+		// Show resources
+		// ctx.fillText(`Fuel: ${state.resources.fuel.toFixed(1)} Oxygen: ${state.resources.oxygen.toFixed(1)}`, 10, 10)
 	}
 })
+
+// On game restart
+space.restart = function() {
+	this.deactivate()
+	this.init()
+}
 
 space.activate = function() {
 	this.active = true
@@ -59,7 +67,7 @@ space.activate = function() {
 	shuttle.activate()
 	Vroom.registerEntity(this.encounters[0])
 
-	Vroom.activateCamera(state.spaceCamera)
+	Vroom.activateCamera(store.state.spaceCamera)
 	Vroom.state.activeCamera.calculateTargetPos()
 	Vroom.state.activeCamera.jumpToTargetPos()
 }

@@ -22,6 +22,7 @@ const mothership = new Entity({
 	onCreated() {
 	},
 	init() {
+		console.log('Mothership running init')
 		this.active = false
 		this.color = 'white'
 		this.shuttleDocked = true
@@ -65,6 +66,15 @@ const mothership = new Entity({
 		}
 	}
 })
+
+// On game restart
+mothership.restart = function() {
+	this.init()
+	this.pos.x = 0
+	this.pos.y = 0
+	this.vel.x = 0
+	this.vel.y = 0
+}
 
 mothership.canShuttleLaunch = function() {
 	return this.shuttleDocked && Date.now() - this.lastLaunch > this.dockingCooldown

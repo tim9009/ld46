@@ -1,6 +1,11 @@
 import { Vroom, Entity } from '../vroom/vroom.js'
 
+import { ground } from './ground.js'
 import { person } from './person.js'
+
+import store from '@/store'
+
+// const state = require('../state.js')
 
 // Constructor
 class Item extends Entity {
@@ -48,11 +53,21 @@ class Item extends Entity {
 	onCollision(target) {
 		// On collision with player character
 		if(target._id == person._id) {
-			true
-		}
-	}
+			switch(this.type) {
+				case 'exit':
+					return
 
-	update() {
+				case 'fuel':
+					store.state.resources.fuel += this.ammount
+					break
+
+				case 'oxygen':
+					store.state.resources.oxygen += this.ammount
+					break
+			}
+
+			ground.deleteItem(this._id)
+		}
 	}
 
 	render(ctx) {
@@ -79,11 +94,6 @@ class Item extends Entity {
 				ctx.arc(relativePos.x, relativePos.y, this.ammount + 1, 0, 2 * Math.PI)
 				ctx.fill()
 				break
-		}
-
-		// Handle item not scanned
-		if(!this.scanned) {
-			return
 		}
 	}
 }

@@ -1,23 +1,41 @@
 <template>
-  <div class="Game">
+  <div class="game">
     <canvas id="vroom-canvas" width="1920" height="1080"></canvas>
+    
+    <transition name="fade">
+      <UIResources/>
+    </transition>
+
+    <transition name="fade">
+      <UIGameLost v-if="gameLost"/>
+    </transition>
+
+    <transition name="fade">
+      <UIGameWon v-if="gameWon"/>
+    </transition>
   </div>
 </template>
 
 <script>
   import store from '@/store'
 
+  import UIResources from './UIResources.vue'
+  import UIGameLost from './UIGameLost.vue'
+  import UIGameWon from './UIGameWon.vue'
+
   import { Vroom } from '../game/vroom/vroom.js'
 
   // Import game
   import init from '@/game/init'
   import start from '@/game/start'
-  import game from '@/game/main'
+  import '@/game/main'
 
   export default {
     name: 'Game',
     components: {
-      
+      UIResources,
+      UIGameLost,
+      UIGameWon
     },
     created() {
       window.addEventListener("resize", this.handleWindowResize)
@@ -30,7 +48,6 @@
       window.removeEventListener("resize", this.handleWindowResize)
     },
     updated() {
-      game.updateViewportSize()
     },
     methods: {
       handleWindowResize() {
@@ -38,12 +55,6 @@
       }
     },
     computed: {
-      gameStarted() {
-        return store.state.gameStarted
-      },
-      communicationVisible() {
-        return store.state.communication.visible
-      },
       gameLost() {
         return store.state.gameLost
       },
@@ -57,8 +68,10 @@
 <style lang="scss">
   // @import '../styles/components/Game';
 
-  .Game {
-    line-height: 0
+  .game {
+    line-height: 0;
+    font-family: monospace;
+    font-size: 12px;
   }
 
   .fade-leave-active {

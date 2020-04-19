@@ -4,7 +4,9 @@ import { person } from './person.js'
 import { Item } from './Item.js'
 import { Terrain } from './Terrain.js'
 
-const state = require('../state.js')
+import store from '@/store'
+
+// const state = require('../state.js')
 
 const ground = new Entity({
 	layer: 1,
@@ -12,6 +14,7 @@ const ground = new Entity({
 		enabled: false	
 	},
 	init() {
+		console.log('Ground running init')
 		this.active = false
 		this.items = []
 		this.terrain = []
@@ -45,7 +48,7 @@ ground.activate = function() {
 	}
 
 	// Set camera
-	Vroom.activateCamera(state.groundCamera)
+	Vroom.activateCamera(store.state.groundCamera)
 	Vroom.state.activeCamera.calculateTargetPos()
 	Vroom.state.activeCamera.jumpToTargetPos()
 }
@@ -61,6 +64,12 @@ ground.deactivate = function() {
 	for(let element in this.terrain) {
 		Vroom.deregisterEntity(this.terrain[element]._id)
 	}
+}
+
+// On game restart
+ground.restart = function() {
+	this.deactivate()
+	this.init()
 }
 
 ground.setScene = function(options) {
@@ -139,6 +148,16 @@ ground.setScene = function(options) {
 		},
 		type: 'wall'
 	}))
+}
+
+ground.deleteItem = function(id) {
+	for(let item in this.items) {
+		if(this.items[item]._id == id) {
+			Vroom.deregisterEntity(id)
+			delete this.items[item]
+			break
+		}
+	}
 }
 
 // Init call

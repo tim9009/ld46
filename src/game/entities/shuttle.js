@@ -16,9 +16,10 @@ const shuttle = new Entity({
 	},
 	mass: 1,
 	restitution: 0,
-	onCreated() {
-	},
 	init() {
+		console.log('Shuttle running init')
+		this.pos.x = 20
+		this.pos.y = 20
 		this.color = 'white'
 		this.speed = 0.1
 		this.launched = false
@@ -123,13 +124,20 @@ const shuttle = new Entity({
 
 			if(!this.interactionCooldownActive() && this.collisionTarget.canShuttleLaunch()) {
 				ctx.strokeStyle = 'white'
-				ctx.beginPath()
-				ctx.rect(targetRelativePos.x + 0.5, targetRelativePos.y + 0.5 - 28, 159, 20)
-				ctx.stroke()
-
 				ctx.fillStyle = 'white'
 				ctx.font = '12px monospace'
-				ctx.fillText('Launch shuttle? (y/n)', targetRelativePos.x + 5, targetRelativePos.y - 15)
+
+				if(this.collisionTarget.canShuttleDock()) {
+					ctx.beginPath()
+					ctx.rect(targetRelativePos.x + 0.5, targetRelativePos.y + 0.5 - 28, 159, 20)
+					ctx.stroke()
+					ctx.fillText('Launch shuttle? (y/n)', targetRelativePos.x + 5, targetRelativePos.y - 15)
+				} else {
+					ctx.beginPath()
+					ctx.rect(targetRelativePos.x + 0.5, targetRelativePos.y + 0.5 - 28, 144, 20)
+					ctx.stroke()
+					ctx.fillText('Launch shuttle? (y)', targetRelativePos.x + 5, targetRelativePos.y - 15)
+				}
 			}
 		}
 
@@ -147,6 +155,13 @@ const shuttle = new Entity({
 	}
 })
 
+// On game restart
+shuttle.restart = function() {
+	this.init()
+	this.vel.x = 0
+	this.vel.y = 0
+}
+
 // Check if interaction cooldown is active
 shuttle.interactionCooldownActive = function() {
 	return Date.now() - this.lastInteraction < this.interactionCooldown
@@ -154,7 +169,7 @@ shuttle.interactionCooldownActive = function() {
 
 // Activate shuttle with correct satte
 shuttle.activate = function() {
-	this.docked = true
+	this.launched = false
 	this.lastInteraction = Date.now()
 }
 

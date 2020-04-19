@@ -1,14 +1,40 @@
 import { Vroom } from './vroom/vroom.js'
 
-import { space } from './entities/space.js'
-import { ground } from './entities/ground.js'
+import start from './start.js'
+// import { ground } from './entities/ground.js'
 
-const state = require('./state.js')
+//const state = require('./state.js')
 
-Vroom.mainUpdateLoopExtension = function() {
-	if(Vroom.isKeyPressed(13) && !state.sceneTriggered) {
-		state.sceneTriggered = true
-		space.deactivate()
-		ground.activate()
+import store from '@/store'
+
+Vroom.mainUpdateLoopExtension = function(secondsPassed) {
+	// If the game has not been won or lost
+	if(!store.state.gameLost && !store.state.gameWon) {
+		// Use oxygen
+		if(store.state.resources.oxygen > 0) {
+			store.state.resources.oxygen -= 1 * secondsPassed
+		}
+
+		// Limit oxygen to 0
+		if(store.state.resources.oxygen < 0) {
+			store.state.resources.oxygen = 0
+		}
+
+		// Check for loss condition
+		if(store.state.resources.oxygen == 0) {
+			store.state.gameLost = true
+		}
+	}
+
+	// BACKSPACE
+	if(Vroom.isKeyPressed(8)) {
+		store.state.resources.oxygen = 0
+	}
+
+	if(store.state.gameLost) {
+		// ENTER
+		if(Vroom.isKeyPressed(13)) {
+			start()
+		}
 	}
 }

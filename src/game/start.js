@@ -1,56 +1,84 @@
 import { Vroom } from './vroom/vroom.js'
 
 // Entities
+import { mothership } from './entities/mothership.js'
 import { shuttle } from './entities/shuttle.js'
 import { person } from './entities/person.js'
 import { space } from './entities/space.js'
 import { ground } from './entities/ground.js'
 
-const state = require('./state.js')
+import store from '@/store'
 
-// Set initial state and start engine
+// const state = require('./state.js')
+
+// Set initial store.state and start engine
 export default function start() {
+	let restarting = Vroom.state.running
 	// Reset size of canvas
 	Vroom.updateSize()
 
 	// Create cameras
-	state.spaceCamera = Vroom.createCamera({
+	store.state.spaceCamera = Vroom.createCamera({
 		pos: {
 			x: 0,
 			y: 0
 		},
 		lerpPercentage: 6
 	})
-	state.spaceCamera.follow(shuttle._id)
+	store.state.spaceCamera.follow(shuttle._id)
 
-	state.groundCamera = Vroom.createCamera({
+	store.state.groundCamera = Vroom.createCamera({
 		pos: {
 			x: 0,
 			y: 0
 		},
 		lerpPercentage: 6
 	})
-	state.groundCamera.follow(person._id)
+	store.state.groundCamera.follow(person._id)
 
 	// Activate camera
-	Vroom.activateCamera(state.spaceCamera)
+	Vroom.activateCamera(store.state.spaceCamera)
 
-	// Set image smooting
-	let imageSmoothing = true
-	Vroom.state.ctx.mozImageSmoothingEnabled = imageSmoothing
-	Vroom.state.ctx.webkitImageSmoothingEnabled = imageSmoothing
-	Vroom.state.ctx.msImageSmoothingEnabled = imageSmoothing
-	Vroom.state.ctx.imageSmoothingEnabled = imageSmoothing
+	// Start engine if first time starting
+	if(!restarting) {
+		// Set image smooting
+		let imageSmoothing = false
+		Vroom.state.ctx.mozImageSmoothingEnabled = imageSmoothing
+		Vroom.state.ctx.webkitImageSmoothingEnabled = imageSmoothing
+		Vroom.state.ctx.msImageSmoothingEnabled = imageSmoothing
+		Vroom.state.ctx.imageSmoothingEnabled = imageSmoothing
 
-	// Vroooom vrooom!
-	Vroom.run()
+		// Vroooom vrooom!
+		Vroom.run()
+	}
 
-	state.started = true
+	// Set initial store.state
+	store.state.gameWon = false
+	store.state.gameLost = false
+	store.state.resources.oxygen = 90
+	store.state.resources.fuel = 2
+	store.state.currentLocations = 1
+	store.state.finalLocations = 4
 
-	// Register entities
+	// Restart entities if restarting
+	if(restarting) {
+		console.log('RESTARTING!')
+		space.restart()
+		ground.restart()
+		mothership.restart()
+		shuttle.restart()
+		person.restart()
+	}
+
+	// Make sure no entities are already registered
+	Vroom.deregisterEntity(space._id)
+	Vroom.deregisterEntity(ground._id)
+
+	// Register scene entities
 	Vroom.registerEntity(space)
 	Vroom.registerEntity(ground)
 
+	// Activate space scene
 	space.newScene()
 	space.activate()
 
