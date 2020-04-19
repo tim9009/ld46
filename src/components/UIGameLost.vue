@@ -27,7 +27,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .gameLost {
     width: 100%;
     height: 100%;
@@ -35,7 +35,7 @@
     top: 0;
     left: 0;
     color: #fff;
-    background-color: #000
+    background-color: #000;
   }
 
   .content {

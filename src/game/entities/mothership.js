@@ -1,6 +1,9 @@
 import { Vroom, Entity } from '../vroom/vroom.js'
 
+import { space } from './space.js'
 import { shuttle } from './shuttle.js'
+
+import store from '@/store'
 
 const mothership = new Entity({
 	layer: 2,
@@ -26,8 +29,8 @@ const mothership = new Entity({
 		this.active = false
 		this.color = 'white'
 		this.shuttleDocked = true
-		this.lastLaunch = Date.now()
-		this.dockingCooldown = 1000
+		this.lastInteraction = Date.now()
+		this.interactionCooldown = 1000
 		this.inContactWithShuttle = true
 	},
 	onCollision(target) {
@@ -37,6 +40,20 @@ const mothership = new Entity({
 	},
 	update() {
 		this.color = (!this.shuttleDocked && this.inContactWithShuttle && this.canShuttleDock()) ? 'green' : 'white'
+
+		// J
+		if(Vroom.isKeyPressed(74)) {
+			// Check if jump is avaiable
+			if(store.state.resources.fuel >= store.state.fuelRequirement && this.shuttleDocked && !this.interactionCooldownActive()) {
+				console.log('Jump!')
+				this.lastInteraction = Date.now()
+				store.state.resources.fuel -= store.state.fuelRequirement
+				store.state.currentLocation += 1
+				space.deactivate()
+				space.newScene()
+				space.activate()
+			}
+		}
 
 		// Reset state
 		this.inContactWithShuttle = false
@@ -76,23 +93,30 @@ mothership.restart = function() {
 	this.vel.y = 0
 }
 
+// Check if interaction cooldown is active
+mothership.interactionCooldownActive = function() {
+	return Date.now() - this.lastInteraction < this.interactionCooldown
+}
+
 mothership.canShuttleLaunch = function() {
-	return this.shuttleDocked && Date.now() - this.lastLaunch > this.dockingCooldown
+	return this.shuttleDocked && !this.interactionCooldownActive()
 }
 
 mothership.canShuttleDock = function() {
-	return !this.shuttleDocked && Date.now() - this.lastLaunch > this.dockingCooldown
+	return !this.shuttleDocked && !this.interactionCooldownActive()
 }
 
 // Shuttle launch event
 mothership.onShuttleLaunch = function() {
 	this.shuttleDocked = false
-	this.lastLaunch = Date.now()
+	this.lastInteraction = Date.now()
+	store.state.shuttleDockedToMothership = false
 }
 
 // Shuttle dock event
 mothership.onShuttleDock = function() {
 	this.shuttleDocked = true
+	store.state.shuttleDockedToMothership = true
 }
 
 // Init call

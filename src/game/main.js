@@ -1,9 +1,6 @@
 import { Vroom } from './vroom/vroom.js'
 
 import start from './start.js'
-// import { ground } from './entities/ground.js'
-
-//const state = require('./state.js')
 
 import store from '@/store'
 
@@ -12,7 +9,7 @@ Vroom.mainUpdateLoopExtension = function(secondsPassed) {
 	if(!store.state.gameLost && !store.state.gameWon) {
 		// Use oxygen
 		if(store.state.resources.oxygen > 0) {
-			store.state.resources.oxygen -= 1 * secondsPassed
+			store.state.resources.oxygen -= 0.5 * secondsPassed
 		}
 
 		// Limit oxygen to 0
@@ -24,6 +21,11 @@ Vroom.mainUpdateLoopExtension = function(secondsPassed) {
 		if(store.state.resources.oxygen == 0) {
 			store.state.gameLost = true
 		}
+
+		// Check for win codition
+		if(store.state.currentLocation >= store.state.finalLocaiton) {
+			store.state.gameWon = true
+		}
 	}
 
 	// BACKSPACE
@@ -31,7 +33,7 @@ Vroom.mainUpdateLoopExtension = function(secondsPassed) {
 		store.state.resources.oxygen = 0
 	}
 
-	if(store.state.gameLost) {
+	if(store.state.gameLost || store.state.gameWon) {
 		// ENTER
 		if(Vroom.isKeyPressed(13)) {
 			start()

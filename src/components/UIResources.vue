@@ -23,7 +23,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .resources {
     position: absolute;
     top: 10px;

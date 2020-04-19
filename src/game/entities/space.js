@@ -21,9 +21,6 @@ const space = new Entity({
 		this.encounters = []
 	},
 	update() {
-		if(!this.active) {
-			return
-		}
 	},
 	render(ctx) {
 		if(!this.active) {

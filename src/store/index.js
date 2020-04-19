@@ -13,8 +13,10 @@ export default new Vuex.Store({
       fuel: 0,
       oxygen: 0
     },
-    currentLocations: 0,
-    finalLocaiton: 0
+    currentLocation: 0,
+    finalLocaiton: 0,
+    fuelRequirement: 0,
+    shuttleDockedToMothership: true
   },
   mutations: {
   },

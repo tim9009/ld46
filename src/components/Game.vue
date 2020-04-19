@@ -7,6 +7,10 @@
     </transition>
 
     <transition name="fade">
+      <UIProgress/>
+    </transition>
+
+    <transition name="fade">
       <UIGameLost v-if="gameLost"/>
     </transition>
 
@@ -20,6 +24,7 @@
   import store from '@/store'
 
   import UIResources from './UIResources.vue'
+  import UIProgress from './UIProgress.vue'
   import UIGameLost from './UIGameLost.vue'
   import UIGameWon from './UIGameWon.vue'
 
@@ -34,6 +39,7 @@
     name: 'Game',
     components: {
       UIResources,
+      UIProgress,
       UIGameLost,
       UIGameWon
     },
@@ -65,7 +71,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   // @import '../styles/components/Game';
 
   .game {

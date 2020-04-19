@@ -56,9 +56,10 @@ export default function start() {
 	store.state.gameWon = false
 	store.state.gameLost = false
 	store.state.resources.oxygen = 90
-	store.state.resources.fuel = 2
-	store.state.currentLocations = 1
-	store.state.finalLocations = 4
+	store.state.resources.fuel = 1
+	store.state.currentLocation = 1
+	store.state.fuelRequirement = 1
+	store.state.finalLocaiton = 4
 
 	// Restart entities if restarting
 	if(restarting) {
