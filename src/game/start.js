@@ -1,9 +1,10 @@
 import { Vroom } from './vroom/vroom.js'
 
 // Entities
-import { mothership } from './entities/mothership.js'
 import { shuttle } from './entities/shuttle.js'
-// import { entityNameThree } from './example_entity_three.js'
+import { person } from './entities/person.js'
+import { space } from './entities/space.js'
+import { ground } from './entities/ground.js'
 
 const state = require('./state.js')
 
@@ -12,7 +13,7 @@ export default function start() {
 	// Reset size of canvas
 	Vroom.updateSize()
 
-	// Create and activate camera
+	// Create cameras
 	state.spaceCamera = Vroom.createCamera({
 		pos: {
 			x: 0,
@@ -20,9 +21,19 @@ export default function start() {
 		},
 		lerpPercentage: 6
 	})
+	state.spaceCamera.follow(shuttle._id)
 
+	state.groundCamera = Vroom.createCamera({
+		pos: {
+			x: 0,
+			y: 0
+		},
+		lerpPercentage: 6
+	})
+	state.groundCamera.follow(person._id)
+
+	// Activate camera
 	Vroom.activateCamera(state.spaceCamera)
-	state.spaceCamera.follow(mothership._id)
 
 	// Set image smooting
 	let imageSmoothing = true
@@ -31,15 +42,17 @@ export default function start() {
 	Vroom.state.ctx.msImageSmoothingEnabled = imageSmoothing
 	Vroom.state.ctx.imageSmoothingEnabled = imageSmoothing
 
+	// Vroooom vrooom!
+	Vroom.run()
+
 	state.started = true
 
 	// Register entities
-	Vroom.registerEntity(mothership)
-	Vroom.registerEntity(shuttle)
-	// Vroom.registerEntity(entityNameThree)
+	Vroom.registerEntity(space)
+	Vroom.registerEntity(ground)
 
-	// Vroooom vrooom!
-	Vroom.run()
+	space.newScene()
+	space.activate()
 
 	// Set focus on window to make the game work when played in an iFrame
 	window.focus()

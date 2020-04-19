@@ -3,6 +3,7 @@ import { Vroom, Entity } from '../vroom/vroom.js'
 import { shuttle } from './shuttle.js'
 
 const mothership = new Entity({
+	layer: 2,
 	physics: {
 		enabled: true,
 		entityType: Entity.KINETIC,
@@ -21,6 +22,7 @@ const mothership = new Entity({
 	onCreated() {
 	},
 	init() {
+		this.active = false
 		this.color = 'white'
 		this.shuttleDocked = true
 		this.lastLaunch = Date.now()
@@ -38,11 +40,14 @@ const mothership = new Entity({
 		this.inContactWithShuttle = false
 	},
 	render(ctx) {
+		if(!Vroom.util.isEntityInCameraView(this)) {
+			return
+		}
+
 		// Calculate relative pos and dim
 		let relativePos = Vroom.util.getCameraRelativePos(this.pos)
 		let relativeDim = Vroom.util.getCameraRelativeDim(this.dim)
 
-		ctx.fillStyle = this.color
 		ctx.strokeStyle = this.color
 
 		// Draw mothership

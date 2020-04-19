@@ -1,13 +1,14 @@
 import { Vroom, Entity } from '../vroom/vroom.js'
 
 const shuttle = new Entity({
+	layer: 2,
 	physics: {
 		enabled: true,
 		entityType: Entity.DYNAMIC
 	},
 	pos: {
-		x: 0,
-		y: 0
+		x: 20,
+		y: 20
 	},
 	dim: {
 		width: 20,
@@ -18,6 +19,7 @@ const shuttle = new Entity({
 	onCreated() {
 	},
 	init() {
+		this.active = false
 		this.color = 'white'
 		this.vlavla = 0.1
 		this.launched = false
@@ -80,7 +82,6 @@ const shuttle = new Entity({
 		this.collisionTarget = null
 	},
 	render(ctx) {
-		// Handle shuttle not launched
 		// Calculate relative pos and dim
 		let relativePos = Vroom.util.getCameraRelativePos(this.pos)
 		let relativeDim = Vroom.util.getCameraRelativeDim(this.dim)
@@ -95,6 +96,34 @@ const shuttle = new Entity({
 			ctx.lineWidth = '4px'
 			ctx.rect(relativePos.x, relativePos.y, relativeDim.width, relativeDim.height)
 			ctx.stroke()
+
+			// Docking prompt
+			if(this.collisionTarget && this.collisionTarget.canShuttleDock()) {
+				ctx.strokeStyle = 'white'
+				ctx.beginPath()
+				ctx.rect(relativePos.x, relativePos.y - 28, 162, 20)
+				ctx.stroke()
+
+				ctx.fillStyle = 'white'
+				ctx.font = '12px monospace'
+				ctx.fillText('Initiate docking? y/n', relativePos.x + 5, relativePos.y - 15)
+			}
+		}
+
+		// Launch prompt
+		if(!this.launched && this.collisionTarget) {
+			let targetRelativePos = Vroom.util.getCameraRelativePos(this.collisionTarget.pos)
+
+			if(!this.interactionCooldownActive() && this.collisionTarget.canShuttleLaunch()) {
+				ctx.strokeStyle = 'white'
+				ctx.beginPath()
+				ctx.rect(targetRelativePos.x, targetRelativePos.y - 28, 146, 20)
+				ctx.stroke()
+
+				ctx.fillStyle = 'white'
+				ctx.font = '12px monospace'
+				ctx.fillText('Launch shuttle? y/n', targetRelativePos.x + 5, targetRelativePos.y - 15)
+			}
 		}
 
 		// Debug info
@@ -102,7 +131,7 @@ const shuttle = new Entity({
 			ctx.fillStyle = 'white'
 			ctx.font = '12px monospace'
 
-			Vroom.util.multilineText(`launched: ${this.launched}\ncollisionTarget: ${this.collisionTarget ? this.collisionTarget_id : this.collisionTarget}`, { x: relativePos.x + 50, y: relativePos.y - (16 * 2) }, 16)
+			Vroom.util.multilineText(`launched: ${this.launched}\ncollisionTarget: ${this.collisionTarget ? this.collisionTarget_id : this.collisionTarget}`, { x: relativePos.x + 50, y: relativePos.y + (16 * 2) }, 16)
 		}
 	}
 })
@@ -120,9 +149,6 @@ shuttle.launch = function() {
 	this.vel.y = 0
 	this.vel.x = 2
 	this.lastInteraction = Date.now()
-
-	// Make camera follow shuttle
-	Vroom.state.activeCamera.follow(this._id)
 }
 
 // Dock shuttle
