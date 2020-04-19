@@ -19,13 +19,12 @@ const shuttle = new Entity({
 	onCreated() {
 	},
 	init() {
-		this.active = false
 		this.color = 'white'
 		this.vlavla = 0.1
 		this.launched = false
 		this.collisionTarget = null
 		this.lastInteraction = Date.now()
-		this.interactionCooldown = 1000
+		this.interactionCooldown = 200
 	},
 	onCollision(target) {
 		this.collisionTarget = target
@@ -35,7 +34,7 @@ const shuttle = new Entity({
 		if(Vroom.isKeyPressed(89)) {
 			if(this.collisionTarget) {
 				// Launch
-				if(!shuttle.launched && !this.interactionCooldownActive() && this.collisionTarget.canShuttleLaunch()) {
+				if(!this.launched && !this.interactionCooldownActive() && this.collisionTarget.canShuttleLaunch()) {
 					this.launch()
 					
 					if(this.collisionTarget.onShuttleLaunch) {
@@ -44,12 +43,23 @@ const shuttle = new Entity({
 				}
 
 				// Dock
-				if(shuttle.launched && !this.interactionCooldownActive() && this.collisionTarget.canShuttleDock()) {
+				if(this.launched && !this.interactionCooldownActive() && this.collisionTarget.canShuttleDock()) {
 					this.dock()
 
 					if(this.collisionTarget.onShuttleDock) {
 						this.collisionTarget.onShuttleDock()
 					}
+				}
+			}
+		}
+
+		// N
+		if(Vroom.isKeyPressed(78)) {
+			if(!this.launched && this.collisionTarget.canShuttleDock() && !this.interactionCooldownActive()) {
+				this.dock()
+
+				if(this.collisionTarget.onShuttleDock) {
+					this.collisionTarget.onShuttleDock()
 				}
 			}
 		}
@@ -77,9 +87,6 @@ const shuttle = new Entity({
 		if(Vroom.isKeyPressed(83)) {
 			this.vel.y += this.vlavla
 		}
-
-		// Reset state
-		this.collisionTarget = null
 	},
 	render(ctx) {
 		// Calculate relative pos and dim
@@ -94,19 +101,19 @@ const shuttle = new Entity({
 			// Draw shuttle
 			ctx.beginPath()
 			ctx.lineWidth = '4px'
-			ctx.rect(relativePos.x, relativePos.y, relativeDim.width, relativeDim.height)
+			ctx.rect(relativePos.x + 0.5, relativePos.y + 0.5, relativeDim.width, relativeDim.height)
 			ctx.stroke()
 
 			// Docking prompt
 			if(this.collisionTarget && this.collisionTarget.canShuttleDock()) {
 				ctx.strokeStyle = 'white'
 				ctx.beginPath()
-				ctx.rect(relativePos.x, relativePos.y - 28, 162, 20)
+				ctx.rect(relativePos.x + 0.5, relativePos.y + 0.5 - 28, 160, 20)
 				ctx.stroke()
 
 				ctx.fillStyle = 'white'
 				ctx.font = '12px monospace'
-				ctx.fillText('Initiate docking? y/n', relativePos.x + 5, relativePos.y - 15)
+				ctx.fillText('Initiate docking? (y)', relativePos.x + 5, relativePos.y - 15)
 			}
 		}
 
@@ -117,12 +124,12 @@ const shuttle = new Entity({
 			if(!this.interactionCooldownActive() && this.collisionTarget.canShuttleLaunch()) {
 				ctx.strokeStyle = 'white'
 				ctx.beginPath()
-				ctx.rect(targetRelativePos.x, targetRelativePos.y - 28, 146, 20)
+				ctx.rect(targetRelativePos.x + 0.5, targetRelativePos.y + 0.5 - 28, 159, 20)
 				ctx.stroke()
 
 				ctx.fillStyle = 'white'
 				ctx.font = '12px monospace'
-				ctx.fillText('Launch shuttle? y/n', targetRelativePos.x + 5, targetRelativePos.y - 15)
+				ctx.fillText('Launch shuttle? (y/n)', targetRelativePos.x + 5, targetRelativePos.y - 15)
 			}
 		}
 
@@ -131,14 +138,24 @@ const shuttle = new Entity({
 			ctx.fillStyle = 'white'
 			ctx.font = '12px monospace'
 
-			Vroom.util.multilineText(`launched: ${this.launched}\ncollisionTarget: ${this.collisionTarget ? this.collisionTarget_id : this.collisionTarget}`, { x: relativePos.x + 50, y: relativePos.y + (16 * 2) }, 16)
+			Vroom.util.multilineText(`launched: ${this.launched}`, { x: relativePos.x + 50, y: relativePos.y + (16 * 2) }, 16)
 		}
+	},
+	afterRender() {
+		// Reset state
+		this.collisionTarget = null
 	}
 })
 
 // Check if interaction cooldown is active
 shuttle.interactionCooldownActive = function() {
 	return Date.now() - this.lastInteraction < this.interactionCooldown
+}
+
+// Activate shuttle with correct satte
+shuttle.activate = function() {
+	this.docked = true
+	this.lastInteraction = Date.now()
 }
 
 // Launch shuttle

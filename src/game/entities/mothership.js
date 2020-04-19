@@ -27,6 +27,7 @@ const mothership = new Entity({
 		this.shuttleDocked = true
 		this.lastLaunch = Date.now()
 		this.dockingCooldown = 1000
+		this.inContactWithShuttle = true
 	},
 	onCollision(target) {
 		if(target._id == shuttle._id) {
@@ -53,7 +54,7 @@ const mothership = new Entity({
 		// Draw mothership
 		ctx.beginPath()
 		ctx.lineWidth = '4px'
-		ctx.rect(relativePos.x, relativePos.y, relativeDim.width, relativeDim.height)
+		ctx.rect(relativePos.x + 0.5, relativePos.y + 0.5, relativeDim.width, relativeDim.height)
 		ctx.stroke()
 
 		// Debug info

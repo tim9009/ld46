@@ -8,6 +8,9 @@ const state = require('../state.js')
 
 const space = new Entity({
 	layer: 1,
+	physics: {
+		enabled: false	
+	},
 	init() {
 		this.active = false
 		this.starCount = 50000
@@ -47,10 +50,18 @@ const space = new Entity({
 
 space.activate = function() {
 	this.active = true
+	Vroom.state.physics.gravity.y = 0
+	Vroom.state.physics.friction.x = 1
+	Vroom.state.physics.friction.y = 1
+
 	Vroom.registerEntity(mothership)
 	Vroom.registerEntity(shuttle)
+	shuttle.activate()
 	Vroom.registerEntity(this.encounters[0])
+
 	Vroom.activateCamera(state.spaceCamera)
+	Vroom.state.activeCamera.calculateTargetPos()
+	Vroom.state.activeCamera.jumpToTargetPos()
 }
 
 space.deactivate = function() {
@@ -75,7 +86,20 @@ space.newScene = function() {
 
 	this.encounters = []
 
-	this.encounters.push(new Encounter())
+	this.encounters.push(new Encounter({
+		type: 'location',
+		ground: {
+			items: [
+				{
+					type: 'fuel',
+					pos: {
+						x: 400,
+						y: -10
+					}
+				}
+			]
+		}
+	}))
 }
 
 // Init call
