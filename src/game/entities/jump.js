@@ -28,9 +28,9 @@ const jump = new Entity({
 
 		// Loop through stars
 		for(let star in this.stars) {
-			if (this.stars[star].pos.x < -(Vroom.state.canvas.getBoundingClientRect().width / 2)) {
-				this.stars[star].pos.x = Vroom.state.canvas.getBoundingClientRect().width / 2
-				this.stars[star].pos.y = Math.floor(Math.random() * (Vroom.state.canvas.getBoundingClientRect().height + 600)) - ((Vroom.state.canvas.getBoundingClientRect().height / 2) + 300)
+			if (this.stars[star].pos.x < -(Vroom.state.canvas.scrollWidth / 2)) {
+				this.stars[star].pos.x = Vroom.state.canvas.scrollWidth / 2
+				this.stars[star].pos.y = Math.floor(Math.random() * (Vroom.state.canvas.scrollHeight + 600)) - ((Vroom.state.canvas.scrollHeight / 2) + 300)
 			}
 
 			this.stars[star].pos.x -= this.speed * secondsPassed
@@ -82,8 +82,8 @@ jump.activate = function() {
 	for(let i = 0; i < this.starCount; i++) {
 		this.stars.push({
 			pos: {
-				x: Math.floor(Math.random() * Vroom.state.canvas.getBoundingClientRect().width) - (Vroom.state.canvas.getBoundingClientRect().width / 2),
-				y: Math.floor(Math.random() * (Vroom.state.canvas.getBoundingClientRect().height + 600)) - ((Vroom.state.canvas.getBoundingClientRect().height / 2) + 300)
+				x: Math.floor(Math.random() * Vroom.state.canvas.scrollWidth) - (Vroom.state.canvas.scrollWidth / 2),
+				y: Math.floor(Math.random() * (Vroom.state.canvas.scrollHeight + 600)) - ((Vroom.state.canvas.scrollHeight / 2) + 300)
 			},
 			r: Math.floor(Math.random() * 2) + 1
 		})
@@ -102,8 +102,8 @@ jump.activate = function() {
 				collisionType: Entity.NONE
 			},
 			pos: {
-				x: Math.floor(Math.random() * Vroom.state.canvas.getBoundingClientRect().width) - (Vroom.state.canvas.getBoundingClientRect().width / 2),
-				y: Math.floor(Math.random() * (Vroom.state.canvas.getBoundingClientRect().height + 600)) - ((Vroom.state.canvas.getBoundingClientRect().height / 2) + 300)
+				x: Math.floor(Math.random() * Vroom.state.canvas.scrollWidth) - (Vroom.state.canvas.scrollWidth / 2),
+				y: Math.floor(Math.random() * (Vroom.state.canvas.scrollHeight + 600)) - ((Vroom.state.canvas.scrollHeight / 2) + 300)
 			},
 			dim: {
 				width: size,
@@ -116,9 +116,9 @@ jump.activate = function() {
 				}
 			},
 			update(secondsPassed) {
-				if (this.pos.x < -(Vroom.state.canvas.getBoundingClientRect().width / 2)) {
-					this.pos.x = Vroom.state.canvas.getBoundingClientRect().width / 2
-					this.pos.y = Math.floor(Math.random() * (Vroom.state.canvas.getBoundingClientRect().height + 600)) - ((Vroom.state.canvas.getBoundingClientRect().height / 2) + 300)
+				if (this.pos.x < -(Vroom.state.canvas.scrollWidth / 2)) {
+					this.pos.x = Vroom.state.canvas.scrollWidth / 2
+					this.pos.y = Math.floor(Math.random() * (Vroom.state.canvas.scrollHeight + 600)) - ((Vroom.state.canvas.scrollHeight / 2) + 300)
 				}
 
 				this.pos.x -= 450 * secondsPassed
