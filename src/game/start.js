@@ -6,6 +6,7 @@ import { shuttle } from './entities/shuttle.js'
 import { person } from './entities/person.js'
 import { space } from './entities/space.js'
 import { ground } from './entities/ground.js'
+import { jump } from './entities/jump.js'
 
 import store from '@/store'
 
@@ -35,6 +36,15 @@ export default function start() {
 		lerpPercentage: 6
 	})
 	store.state.groundCamera.follow(person._id)
+
+	store.state.jumpCamera = Vroom.createCamera({
+		pos: {
+			x: 0,
+			y: 0
+		},
+		lerpPercentage: 6
+	})
+	store.state.groundCamera.follow(mothership._id)
 
 	// Activate camera
 	Vroom.activateCamera(store.state.spaceCamera)
@@ -66,6 +76,7 @@ export default function start() {
 		console.log('RESTARTING!')
 		space.restart()
 		ground.restart()
+		jump.restart()
 		mothership.restart()
 		shuttle.restart()
 		person.restart()
@@ -74,10 +85,12 @@ export default function start() {
 	// Make sure no entities are already registered
 	Vroom.deregisterEntity(space._id)
 	Vroom.deregisterEntity(ground._id)
+	Vroom.deregisterEntity(jump._id)
 
 	// Register scene entities
 	Vroom.registerEntity(space)
 	Vroom.registerEntity(ground)
+	Vroom.registerEntity(jump)
 
 	// Activate space scene
 	space.newScene()

@@ -6,7 +6,7 @@
     <div class="jumpButton" :class="{ active: canJump }">
       Activate jumpdrive (j)
     </div>
-    <div class="jumpStatusText">{{ jumpStatusText }}</div>
+    <div class="jumpStatusText" :class="{ active: canJump }">{{ jumpStatusText }}</div>
   </div>
 </template>
 
@@ -39,7 +39,7 @@
         }
 
         if(store.state.resources.fuel < store.state.fuelRequirement) {
-          text = 'Not enough fuel'
+          text = `Not enough fuel (${ store.state.resources.fuel }/${ store.state.fuelRequirement })`
         }
 
         return text
@@ -110,5 +110,12 @@
 
   .jumpStatusText {
     margin-top: 10px;
+    color: #7F7F7F;
+
+    transition: color 1s;
+
+    &.active {
+      color: #fff;
+    }
   }
 </style>

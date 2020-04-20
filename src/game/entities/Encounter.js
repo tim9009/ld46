@@ -15,8 +15,8 @@ class Encounter extends Entity {
 				collisionType: Entity.NONE
 			},
 			pos: {
-				x: 400,
-				y: -100
+				x: (options.pos && options.pos.x) ? options.pos.x : 0,
+				y: (options.pos && options.pos.y) ? options.pos.y : 0
 			},
 			dim: {
 				width: 30,
@@ -29,7 +29,7 @@ class Encounter extends Entity {
 			items: (options.ground && options.ground.items) ? options.ground.items : []
 		}
 		this.scanned = false
-		this.color = 'red'
+		this.color = 'white'
 		this.shuttleDocked = false
 		this.lastInteraction = Date.now()
 		this.interactionCooldown = 1000
@@ -43,7 +43,7 @@ class Encounter extends Entity {
 	}
 
 	update() {
-		this.color = this.inContactWithShuttle ? 'green' : 'red'
+		this.color = this.inContactWithShuttle ? 'green' : '#FD7D08'
 
 		// Reset state
 		this.inContactWithShuttle = false

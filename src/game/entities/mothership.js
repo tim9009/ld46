@@ -48,6 +48,7 @@ const mothership = new Entity({
 				console.log('Jump!')
 				this.lastInteraction = Date.now()
 				store.state.resources.fuel -= store.state.fuelRequirement
+				store.state.fuelRequirement++
 				store.state.currentLocation += 1
 				space.deactivate()
 				space.newScene()
@@ -74,6 +75,8 @@ const mothership = new Entity({
 		ctx.lineWidth = '4px'
 		ctx.rect(relativePos.x + 0.5, relativePos.y + 0.5, relativeDim.width, relativeDim.height)
 		ctx.stroke()
+
+		ctx.fillText('Starliner F1', relativePos.x - 95, relativePos.y + 32)
 
 		// Debug info
 		if(Vroom.state.debug.enabled && Vroom.state.debug.overlay) {

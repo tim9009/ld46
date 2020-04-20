@@ -96,7 +96,7 @@ ground.setScene = function(options) {
 		for(let item in options.items) {
 			this.items.push(new Item({
 				type: options.items[item].type || null,
-				ammount: options.ammount || null,
+				ammount: options.items[item].ammount || null,
 				pos: {
 					x: (options.items[item].pos && options.items[item].pos.x) ? options.items[item].pos.x : 0,
 					y: (options.items[item].pos && options.items[item].pos.y) ? options.items[item].pos.y : 0

@@ -8,69 +8,44 @@ import store from '@/store'
 
 // const state = require('../state.js')
 
-const space = new Entity({
+const jump = new Entity({
 	layer: 1,
 	physics: {
 		enabled: false	
 	},
 	init() {
-		console.log('Space running init')
+		console.log('Jump running init')
 		this.active = false
-		this.starCount = 50000
-		this.stars = []
-		this.encounters = []
 	},
 	update() {
 	},
-	render(ctx) {
+	render() {
 		if(!this.active) {
 			return
-		}
-
-		ctx.fillStyle = 'white'
-		
-		for (let star in this.stars) {
-			// Handle star is outside viewport
-			if (!Vroom.util.isPosInCameraView(this.stars[star].pos)) {
-				continue
-			}
-
-			let relativePos = Vroom.util.getCameraRelativePos(this.stars[star].pos)
-
-			ctx.beginPath()
-			ctx.arc(relativePos.x, relativePos.y, this.stars[star].r, 0, 2 * Math.PI)
-			ctx.fill()
 		}
 	}
 })
 
 // On game restart
-space.restart = function() {
+jump.restart = function() {
 	this.deactivate()
 	this.init()
 }
 
-space.activate = function() {
+jump.activate = function() {
 	this.active = true
 	Vroom.state.physics.gravity.y = 0
 	Vroom.state.physics.friction.x = 0.5
 	Vroom.state.physics.friction.y = 0.5
 
 	Vroom.registerEntity(mothership)
-	Vroom.registerEntity(shuttle)
-	shuttle.activate()
 
-	// Register encounters
-	for(let encouter in this.encounters) {
-		Vroom.registerEntity(this.encounters[encouter])
-	}
-
-	Vroom.activateCamera(store.state.spaceCamera)
+	Vroom.activateCamera(store.state.jumpCamera)
 	Vroom.state.activeCamera.calculateTargetPos()
 	Vroom.state.activeCamera.jumpToTargetPos()
 }
 
-space.deactivate = function() {
+jump.deactivate = function() {
 	this.active = false
 	Vroom.deregisterEntity(mothership._id)
 	Vroom.deregisterEntity(shuttle._id)
@@ -81,7 +56,7 @@ space.deactivate = function() {
 	}
 }
 
-space.newScene = function() {
+jump.newScene = function() {
 	this.stars = []
 	
 	for(let i = 0; i < this.starCount; i++) {
@@ -147,6 +122,6 @@ space.newScene = function() {
 }
 
 // Init call
-space.init()
+jump.init()
 
-export { space }
+export { jump }

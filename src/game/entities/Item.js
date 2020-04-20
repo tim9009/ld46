@@ -37,11 +37,15 @@ class Item extends Entity {
 				break
 
 			case 'fuel':
-				this.color = 'green'
+				this.color = '#32FF06'
 				break
 
 			case 'oxygen':
-				this.color = 'blue'
+				this.color = '#21BBFF'
+				break
+
+			case 'scrap':
+				this.color = '#FD7D08'
 				break
 
 			default:
@@ -63,6 +67,10 @@ class Item extends Entity {
 
 				case 'oxygen':
 					store.state.resources.oxygen += this.ammount
+					break
+
+				case 'scrap':
+					store.state.resources.scrap += this.ammount
 					break
 			}
 
@@ -87,11 +95,12 @@ class Item extends Entity {
 				ctx.lineWidth = '4px'
 				ctx.rect(relativePos.x + 0.5, relativePos.y + 0.5, this.dim.width, this.dim.height)
 				ctx.stroke()
+				ctx.fillText('Shuttle 1', relativePos.x - 95, relativePos.y + 42)
 				break
 
 			default:
 				ctx.beginPath()
-				ctx.arc(relativePos.x, relativePos.y, this.ammount + 1, 0, 2 * Math.PI)
+				ctx.arc(relativePos.x, relativePos.y, this.ammount * 2, 0, 2 * Math.PI)
 				ctx.fill()
 				break
 		}

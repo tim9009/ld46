@@ -24,7 +24,7 @@ const person = new Entity({
 	init() {
 		console.log('Person running init')
 		this.active = false
-		this.color = 'blue'
+		this.color = '#fff'
 		this.speed = 0.2
 		this.maxSpeed = 4
 		this.boarded = true

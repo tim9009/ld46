@@ -11,7 +11,10 @@ export default new Vuex.Store({
     groundCamera: null,
     resources: {
       fuel: 0,
-      oxygen: 0
+      oxygen: 0,
+      scrap: 0,
+      mothershipStructure: 100,
+      personHealth: 100
     },
     currentLocation: 0,
     finalLocaiton: 0,

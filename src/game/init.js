@@ -6,7 +6,7 @@ export default function init() {
 	Vroom.init({
 		canvasId: 'vroom-canvas',
 		debug: {
-			enabled: true,
+			enabled: false,
 			overlay: true
 		},
 		dim: {

@@ -105,6 +105,8 @@ const shuttle = new Entity({
 			ctx.rect(relativePos.x + 0.5, relativePos.y + 0.5, relativeDim.width, relativeDim.height)
 			ctx.stroke()
 
+			ctx.fillText('Shuttle 1', relativePos.x - 72, relativePos.y + 14)
+
 			// Docking prompt
 			if(this.collisionTarget && this.collisionTarget.canShuttleDock()) {
 				ctx.strokeStyle = 'white'
