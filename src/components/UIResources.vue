@@ -1,6 +1,6 @@
 <template>
   <div class="resources">
-    <span>Fuel: {{ fuel }}</span> <span>Scrap: {{ scrap }}</span> <span>Oxygen: {{ oxygen }}</span> <span>Structure: <div class="bar" :value="mothershipStructure"></div></span>
+    <span>Fuel: {{ fuel }}</span> <span>Scrap: {{ scrap }}</span> <span>Oxygen: {{ oxygen }}</span> <span>Structure: <div class="bar" :value="mothershipStructure"><div class="fill"></div></div></span>
   </div>
 </template>
 
@@ -44,26 +44,20 @@
 
   .bar {
     display: inline-block;
-    position: relative;
-    width: 100px;
+    width: 104px;
     height: 10px;
     border: solid 2px #fff;
-    transform-style: preserve-3d;
 
-    &:after {
+    .fill {
       content: '';
       display: block;
-      position: absolute;
-      left: -2px;
-      top: -2px;
       width: 100px;
-      height: 10px;
+      height: 6px;
       background-color: green;
-      transform: translateZ(-1px);
     }
 
     @for $percent from 1 through 100 {
-        &[value="#{$percent}"]:after {
+        &[value="#{$percent}"] .fill {
           width: #{$percent}px;
           @if $percent > 66 {
             background-color: green;
