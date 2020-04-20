@@ -1,8 +1,8 @@
 <template>
   <div class="gameLost">
     <div class="content">
-      <h1>Game lost</h1>
-      <div>Fuel: {{fuel}} Oxygen: {{oxygen}}</div>
+      <h1>You did not make it home</h1>
+      <div>Fuel: {{fuel}} Scrap: {{scrap}} Oxygen: {{oxygen}}</div>
       <div>Press enter to try again</div>
     </div>
   </div>
@@ -22,6 +22,9 @@
       },
       oxygen() {
         return store.state.resources.oxygen.toFixed(1)
+      },
+      scrap() {
+        return store.state.resources.scrap
       }
     }
   }

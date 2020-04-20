@@ -59,6 +59,7 @@ space.activate = function() {
 	Vroom.registerEntity(mothership)
 	Vroom.registerEntity(shuttle)
 	shuttle.activate()
+	mothership.activate()
 
 	// Register encounters
 	for(let encouter in this.encounters) {
@@ -98,26 +99,27 @@ space.newScene = function() {
 
 	let encounterCount = Math.floor(Math.random() * 5) + 2
 
+	let fuelChance = 0.8
+	let totalFuel = 0
+
 	for(let i = 0; i < encounterCount; i++) {
 		let itemCount = Math.floor(Math.random() * 5) + 1
 		let items = []
 
-		let fuelChance = 0.8
-		let totalFuel = 0
-
 		// Generate list of items
 		for(let ii = 0; ii < itemCount; ii++) {
-			let type = (Math.random() >= fuelChance) ? 'fuel' : 'oxygen'
-			let ammount = (Math.random() >= 0.5) ? 1 : 2
+			let type = (Math.random() >= fuelChance) ? 'fuel' : ((Math.random() >= 0.4) ? 'scrap' : 'oxygen' )
+			let ammount = (Math.floor(Math.random() * 3)) + 1
 			
 			if(type == 'fuel') {
-				totalFuel++
-				fuelChance += (0.025 * ammount)
+				totalFuel += ammount
+				fuelChance += (0.25 * ammount)
 			}
 
 			// Add fuel if no fuel has been added
-			if(totalFuel == 0 && ii == itemCount - 2) {
+			if(totalFuel < store.state.fuelRequirement && i == encounterCount - 1 && ii == itemCount - 1) {
 				type = 'fuel'
+				ammount = store.state.fuelRequirement - totalFuel
 			}
 			
 			items.push({

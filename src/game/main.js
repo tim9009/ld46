@@ -9,7 +9,7 @@ Vroom.mainUpdateLoopExtension = function(secondsPassed) {
 	if(!store.state.gameLost && !store.state.gameWon) {
 		// Use oxygen
 		if(store.state.resources.oxygen > 0) {
-			store.state.resources.oxygen -= 0.5 * secondsPassed
+			store.state.resources.oxygen -= 0.2 * secondsPassed
 		}
 
 		// Limit oxygen to 0
@@ -18,7 +18,7 @@ Vroom.mainUpdateLoopExtension = function(secondsPassed) {
 		}
 
 		// Check for loss condition
-		if(store.state.resources.oxygen == 0) {
+		if(store.state.resources.oxygen == 0 || store.state.resources.mothershipStructure <= 0) {
 			store.state.gameLost = true
 		}
 
@@ -28,10 +28,10 @@ Vroom.mainUpdateLoopExtension = function(secondsPassed) {
 		}
 	}
 
-	// BACKSPACE
-	if(Vroom.isKeyPressed(8)) {
-		store.state.resources.oxygen = 0
-	}
+	// // BACKSPACE
+	// if(Vroom.isKeyPressed(8)) {
+	// 	store.state.resources.oxygen = 0
+	// }
 
 	if(store.state.gameLost || store.state.gameWon) {
 		// ENTER

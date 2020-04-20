@@ -1,8 +1,7 @@
 import { Vroom, Entity } from '../vroom/vroom.js'
 
+import { space } from './space.js'
 import { mothership } from './mothership.js'
-import { shuttle } from './shuttle.js'
-import { Encounter } from './Encounter.js'
 
 import store from '@/store'
 
@@ -16,12 +15,45 @@ const jump = new Entity({
 	init() {
 		console.log('Jump running init')
 		this.active = false
+		this.speed = 2000
+		this.starCount = 200
+		this.stars = []
+		this.debrisCount = 40
+		this.debris = []
 	},
-	update() {
-	},
-	render() {
+	update(secondsPassed) {
 		if(!this.active) {
 			return
+		}
+
+		// Loop through stars
+		for(let star in this.stars) {
+			if (this.stars[star].pos.x < -(Vroom.state.canvas.width / 2)) {
+				this.stars[star].pos.x = Vroom.state.canvas.width / 2
+				this.stars[star].pos.y = Math.floor(Math.random() * (Vroom.state.canvas.height + 600)) - ((Vroom.state.canvas.height / 2) + 300)
+			}
+
+			this.stars[star].pos.x -= this.speed * secondsPassed
+		}
+	},
+	render(ctx) {
+		if(!this.active) {
+			return
+		}
+
+		ctx.fillStyle = 'white'
+		
+		for (let star in this.stars) {
+			// Handle star is outside viewport
+			if (!Vroom.util.isPosInCameraView(this.stars[star].pos)) {
+				continue
+			}
+
+			let relativePos = Vroom.util.getCameraRelativePos(this.stars[star].pos)
+
+			ctx.beginPath()
+			ctx.arc(relativePos.x, relativePos.y, this.stars[star].r, 0, 2 * Math.PI)
+			ctx.fill()
 		}
 	}
 })
@@ -43,81 +75,97 @@ jump.activate = function() {
 	Vroom.activateCamera(store.state.jumpCamera)
 	Vroom.state.activeCamera.calculateTargetPos()
 	Vroom.state.activeCamera.jumpToTargetPos()
-}
 
-jump.deactivate = function() {
-	this.active = false
-	Vroom.deregisterEntity(mothership._id)
-	Vroom.deregisterEntity(shuttle._id)
-	
-	// Deegister encounters
-	for(let encouter in this.encounters) {
-		Vroom.deregisterEntity(this.encounters[encouter]._id)
-	}
-}
-
-jump.newScene = function() {
+	// Create initial stars
 	this.stars = []
 	
 	for(let i = 0; i < this.starCount; i++) {
 		this.stars.push({
 			pos: {
-				x: Math.floor(Math.random() * 50000) - 25000,
-				y: Math.floor(Math.random() * 50000) - 25000
+				x: Math.floor(Math.random() * Vroom.state.canvas.width) - (Vroom.state.canvas.width / 2),
+				y: Math.floor(Math.random() * (Vroom.state.canvas.height + 600)) - ((Vroom.state.canvas.height / 2) + 300)
 			},
 			r: Math.floor(Math.random() * 2) + 1
 		})
 	}
 
-	this.encounters = []
+	// Create initial debris
+	this.debris = []
+	
+	for(let i = 0; i < this.debrisCount; i++) {
+		let size = Math.floor(Math.random() * 10) + 2
 
-	let encounterCount = Math.floor(Math.random() * 5) + 2
-
-	for(let i = 0; i < encounterCount; i++) {
-		let itemCount = Math.floor(Math.random() * 5) + 1
-		let items = []
-
-		let fuelChance = 0.8
-		let totalFuel = 0
-
-		// Generate list of items
-		for(let ii = 0; ii < itemCount; ii++) {
-			let type = (Math.random() >= fuelChance) ? 'fuel' : 'oxygen'
-			let ammount = (Math.random() >= 0.5) ? 1 : 2
-			
-			if(type == 'fuel') {
-				totalFuel++
-				fuelChance += (0.025 * ammount)
-			}
-
-			// Add fuel if no fuel has been added
-			if(totalFuel == 0 && ii == itemCount - 2) {
-				type = 'fuel'
-			}
-			
-			items.push({
-				type,
-				pos: {
-					x: Math.floor(Math.random() * 700) + 150,
-					y: -10
-				},
-				ammount
-			})
-		}
-
-		console.log(items)
-
-		// Add encounter
-		this.encounters.push(new Encounter({
-			type: 'location',
-			pos: {
-				x: (Math.floor(Math.random() * 800) + 100) * (Math.random() > 0.5 ? -1 : 1) ,
-				y: (Math.floor(Math.random() * 600) + 100) * (Math.random() > 0.5 ? -1 : 1)
+		this.debris.push( new Entity({
+			physics: {
+				enabled: true,
+				entityType: Entity.KINEMATIC,
+				collisionType: Entity.NONE
 			},
-			ground: {
-				items
+			pos: {
+				x: Math.floor(Math.random() * Vroom.state.canvas.width) - (Vroom.state.canvas.width / 2),
+				y: Math.floor(Math.random() * (Vroom.state.canvas.height + 600)) - ((Vroom.state.canvas.height / 2) + 300)
+			},
+			dim: {
+				width: size,
+				height: size
+			},
+			onCollision(target) {
+				if(target._id == mothership._id) {
+					store.state.resources.mothershipStructure -= this.dim.width
+					jump.deleteDebris(this._id)
+				}
+			},
+			update(secondsPassed) {
+				if (this.pos.x < -(Vroom.state.canvas.width / 2)) {
+					this.pos.x = Vroom.state.canvas.width / 2
+					this.pos.y = Math.floor(Math.random() * (Vroom.state.canvas.height + 600)) - ((Vroom.state.canvas.height / 2) + 300)
+				}
+
+				this.pos.x -= 450 * secondsPassed
+			},
+			render(ctx) {
+				let relativePos = Vroom.util.getCameraRelativePos(this.pos)
+				let relativeDim = Vroom.util.getCameraRelativeDim(this.dim)
+
+				ctx.strokeStyle = 'red'
+
+				ctx.beginPath()
+				ctx.lineWidth = '4px'
+				ctx.rect(relativePos.x + 0.5, relativePos.y + 0.5, relativeDim.width, relativeDim.height)
+				ctx.stroke()
 			}
 		}))
+	}
+
+	// Register debris
+	for(let debris in this.debris) {
+		Vroom.registerEntity(this.debris[debris])
+	}
+
+	window.setTimeout(function() {
+		jump.deactivate()
+		space.newScene()
+		space.activate()
+	}, 30000)
+}
+
+jump.deactivate = function() {
+	this.active = false
+	Vroom.deregisterEntity(mothership._id)
+
+	// Deregister debris
+	for(let debris in this.debris) {
+		Vroom.deregisterEntity(this.debris[debris]._id)
+	}
+}
+
+jump.deleteDebris = function(id) {
+	for(let debris in this.debris) {
+		if(this.debris[debris]._id == id) {
+			Vroom.deregisterEntity(id)
+			delete this.debris[debris]
+			break
+		}
 	}
 }
 

@@ -44,7 +44,7 @@ export default function start() {
 		},
 		lerpPercentage: 6
 	})
-	store.state.groundCamera.follow(mothership._id)
+	store.state.jumpCamera.follow(mothership._id)
 
 	// Activate camera
 	Vroom.activateCamera(store.state.spaceCamera)
@@ -66,10 +66,12 @@ export default function start() {
 	store.state.gameWon = false
 	store.state.gameLost = false
 	store.state.resources.oxygen = 90
-	store.state.resources.fuel = 1
+	store.state.resources.fuel = 0
+	store.state.resources.scrap = 5
+	store.state.resources.mothershipStructure = 100
 	store.state.currentLocation = 1
 	store.state.fuelRequirement = 1
-	store.state.finalLocaiton = 4
+	store.state.finalLocaiton = 5
 
 	// Restart entities if restarting
 	if(restarting) {

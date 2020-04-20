@@ -69,7 +69,7 @@
             background-color: green;
           } @else if $percent > 33 {
             background-color: orange;
-          } @else if $percent < 33 {
+          } @else if $percent <= 33 {
             background-color: red;
           }
         }

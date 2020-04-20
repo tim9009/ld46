@@ -1,6 +1,7 @@
 import { Vroom, Entity } from '../vroom/vroom.js'
 
 import { space } from './space.js'
+import { jump } from './jump.js'
 import { shuttle } from './shuttle.js'
 
 import store from '@/store'
@@ -28,6 +29,7 @@ const mothership = new Entity({
 		console.log('Mothership running init')
 		this.active = false
 		this.color = 'white'
+		this.speed = 0.05
 		this.shuttleDocked = true
 		this.lastInteraction = Date.now()
 		this.interactionCooldown = 1000
@@ -41,18 +43,44 @@ const mothership = new Entity({
 	update() {
 		this.color = (!this.shuttleDocked && this.inContactWithShuttle && this.canShuttleDock()) ? 'green' : 'white'
 
-		// J
-		if(Vroom.isKeyPressed(74)) {
-			// Check if jump is avaiable
-			if(store.state.resources.fuel >= store.state.fuelRequirement && this.shuttleDocked && !this.interactionCooldownActive()) {
-				console.log('Jump!')
-				this.lastInteraction = Date.now()
-				store.state.resources.fuel -= store.state.fuelRequirement
-				store.state.fuelRequirement++
-				store.state.currentLocation += 1
-				space.deactivate()
-				space.newScene()
-				space.activate()
+		// F
+		if(Vroom.isKeyPressed(70)) {
+			// Check if can fix damage
+			if(this.shuttleDocked && store.state.resources.scrap > 0 && store.state.resources.mothershipStructure < 100 && !this.interactionCooldownActive()) {
+				store.state.resources.mothershipStructure += store.state.resources.scrap
+				store.state.resources.scrap = 0
+			}
+		}
+
+		if(space.active) {
+			// J
+			if(Vroom.isKeyPressed(74)) {
+				// Check if jump is avaiable
+				if(store.state.resources.fuel >= store.state.fuelRequirement && this.shuttleDocked && !this.interactionCooldownActive()) {
+					this.jump()
+				}
+			}
+		}
+
+		if(jump.active) {
+			// W
+			if(Vroom.isKeyPressed(87)) {
+				this.vel.y -= this.speed
+			}
+
+			// S
+			if(Vroom.isKeyPressed(83)) {
+				this.vel.y += this.speed
+			}
+
+			// Limit movement
+			if(this.pos.y > 600) {
+				this.pos.y = 600
+				this.vel.y = 0
+			}
+			if(this.pos.y < -600) {
+				this.pos.y = -600
+				this.vel.y = 0
 			}
 		}
 
@@ -76,7 +104,27 @@ const mothership = new Entity({
 		ctx.rect(relativePos.x + 0.5, relativePos.y + 0.5, relativeDim.width, relativeDim.height)
 		ctx.stroke()
 
-		ctx.fillText('Starliner F1', relativePos.x - 95, relativePos.y + 32)
+		ctx.fillText('Starship F1', relativePos.x - 90, relativePos.y + 32)
+
+		// Fix prompt
+		if(this.shuttleDocked && store.state.resources.scrap > 0 && store.state.resources.mothershipStructure < 100 && !this.interactionCooldownActive()) {
+			let fixPromptBoxOffset = 56
+			let fixPromptTextOffset = 42
+
+			if(jump.active) {
+				fixPromptBoxOffset = 28
+				fixPromptTextOffset = 14
+			}
+
+			ctx.strokeStyle = 'white'
+			ctx.beginPath()
+			ctx.rect(relativePos.x + 0.5, relativePos.y + 0.5 - fixPromptBoxOffset, 202, 20)
+			ctx.stroke()
+
+			ctx.fillStyle = 'white'
+			ctx.font = '12px monospace'
+			ctx.fillText('Fix damage using scrap? (f)', relativePos.x + 5, relativePos.y - fixPromptTextOffset)
+		}
 
 		// Debug info
 		if(Vroom.state.debug.enabled && Vroom.state.debug.overlay) {
@@ -90,6 +138,14 @@ const mothership = new Entity({
 // On game restart
 mothership.restart = function() {
 	this.init()
+	this.pos.x = 0
+	this.pos.y = 0
+	this.vel.x = 0
+	this.vel.y = 0
+}
+
+
+mothership.activate = function() {
 	this.pos.x = 0
 	this.pos.y = 0
 	this.vel.x = 0
@@ -120,6 +176,17 @@ mothership.onShuttleLaunch = function() {
 mothership.onShuttleDock = function() {
 	this.shuttleDocked = true
 	store.state.shuttleDockedToMothership = true
+}
+
+// Jump to next location
+mothership.jump = function() {
+	console.log('Jump!')
+	this.lastInteraction = Date.now()
+	store.state.resources.fuel -= store.state.fuelRequirement
+	store.state.fuelRequirement++
+	store.state.currentLocation += 1
+	space.deactivate()
+	jump.activate()
 }
 
 // Init call
